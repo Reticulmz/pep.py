@@ -1,6 +1,7 @@
 import os
 import sys
 import threading
+import json
 from multiprocessing.pool import ThreadPool
 import tornado.gen
 import tornado.httpserver
@@ -32,7 +33,7 @@ from objects import banchoConfig
 from objects import chatFilters
 from objects import fokabot
 from objects import glob
-from pubSubHandlers import changeUsernameHandler, setMainMenuIconHandler
+from pubSubHandlers import changeUsernameHandler
 
 from pubSubHandlers import disconnectHandler
 from pubSubHandlers import banHandler
@@ -69,6 +70,11 @@ if __name__ == "__main__":
 		# Read config.ini
 		consoleHelper.printNoNl("> Loading config file... ")
 		glob.conf = configHelper.config("config.ini")
+
+		# Read additional config file
+		consoleHelper.printNoNl("> Loading additional config file... ")
+		with open("config.json", "r") as f:
+			glob.conf.extra = json.load(f)
 
 		if glob.conf.default:
 			# We have generated a default config.ini, quit server
@@ -165,7 +171,7 @@ if __name__ == "__main__":
 			raise
 
 		# Start fokabot
-		consoleHelper.printNoNl("> Connecting FokaBot... ")
+		consoleHelper.printNoNl("> Connecting bot... ")
 		fokabot.connect()
 		consoleHelper.printDone()
 
@@ -293,7 +299,6 @@ if __name__ == "__main__":
 			"peppy:silence": updateSilenceHandler.handler(),
 			"peppy:ban": banHandler.handler(),
 			"peppy:notification": notificationHandler.handler(),
-			"peppy:set_main_menu_icon": setMainMenuIconHandler.handler(),
 		}).start()
 
 		# Start tornado

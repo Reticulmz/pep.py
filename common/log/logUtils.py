@@ -1,5 +1,3 @@
-import sys
-
 from common.constants import bcolors
 from common import generalUtils
 from objects import glob
@@ -54,7 +52,6 @@ def logMessage(message, alertType = "INFO", messageColor = bcolors.ENDC, discord
 	# Log to console
 	if stdout:
 		print(finalMessageConsole)
-		sys.stdout.flush()
 
 	# Log to discord if needed
 	if discord is not None:
@@ -118,7 +115,7 @@ def debug(message):
 	:param message: debug message
 	:return:
 	"""
-	if glob.conf["DEBUG"]:
+	if glob.debug:
 		logMessage(message, "DEBUG", bcolors.PINK)
 
 def chat(message):
@@ -139,7 +136,7 @@ def pm(message):
 	"""
 	logMessage(message, "CHAT", bcolors.BLUE)
 
-def rap(userID, message, discord=False, through="FokaBot"):
+def rap(userID, message, discord=False, through=None):
 	"""
 	Log a message to Admin Logs.
 
@@ -149,6 +146,9 @@ def rap(userID, message, discord=False, through="FokaBot"):
 	:param through: through string. Default: FokaBot
 	:return:
 	"""
+	if through is None: #Set default messager to bot account
+		through = glob.BOT_NAME
+
 	glob.db.execute("INSERT INTO rap_logs (id, userid, text, datetime, through) VALUES (NULL, %s, %s, %s, %s)", [userID, message, int(time.time()), through])
 	username = userUtils.getUsername(userID)
-	logMessage("{} {}".format(username, message), discord=discord)
+	logMessage("{} {}".format(username, message), discord=True)

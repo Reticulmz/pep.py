@@ -47,24 +47,17 @@ class connectionsPool:
 	"""
 	A MySQL workers pool
 	"""
-	def __init__(self, host, port, username, password, database, size=128):
+	def __init__(self, host, username, password, database, size=128):
 		"""
 		Initialize a MySQL connections pool
 
-		:param host: MySQL server host
-		:param port: MySQL server port
+		:param host: MySQL host
 		:param username: MySQL username
 		:param password: MySQL password
 		:param database: MySQL database name
 		:param size: pool max size
 		"""
-		self.config = {
-			"host": host,
-			"port": port,
-			"user": username,
-			"passwd": password,
-			"db": database
-		}
+		self.config = (host, username, password, database)
 		self.maxSize = size
 		self.pool = queue.Queue(self.maxSize)
 		self.consecutiveEmptyPool = 0
@@ -78,7 +71,7 @@ class connectionsPool:
 		:return: instance of worker class
 		"""
 		db = MySQLdb.connect(
-			**self.config,
+			*self.config,
 			autocommit=True,
 			charset="utf8",
 			use_unicode=True
@@ -168,29 +161,26 @@ class db:
 	"""
 	A MySQL helper with multiple workers
 	"""
-	def __init__(self, host, port, username, password, database, initialSize):
+	def __init__(self, host, username, password, database, initialSize):
 		"""
 		Initialize a new MySQL database helper with multiple workers.
 		This class is thread safe.
 
-		:param host: MySQL server host
-		:param port: MySQL server port
+		:param host: MySQL host
 		:param username: MySQL username
 		:param password: MySQL password
 		:param database: MySQL database name
 		:param initialSize: initial pool size
 		"""
-		self.pool = connectionsPool(host, port, username, password, database, initialSize)
+		self.pool = connectionsPool(host, username, password, database, initialSize)
 
-	def execute(self, query, params=None):
+	def execute(self, query, params = ()):
 		"""
 		Executes a query
 
 		:param query: query to execute. You can bind parameters with %s
 		:param params: parameters list. First element replaces first %s and so on
 		"""
-		if params is None:
-			params = ()
 		cursor = None
 		worker = self.pool.getWorker()
 		if worker is None:
@@ -208,7 +198,7 @@ class db:
 			if worker is not None:
 				self.pool.putWorker(worker)
 
-	def fetch(self, query, params=None, _all=False):
+	def fetch(self, query, params = (), _all = False):
 		"""
 		Fetch a single value from db that matches given query
 
@@ -216,8 +206,6 @@ class db:
 		:param params: parameters list. First element replaces first %s and so on
 		:param _all: fetch one or all values. Used internally. Use fetchAll if you want to fetch all values
 		"""
-		if params is None:
-			params = ()
 		cursor = None
 		worker = self.pool.getWorker()
 		if worker is None:
@@ -238,7 +226,7 @@ class db:
 			if worker is not None:
 				self.pool.putWorker(worker)
 
-	def fetchAll(self, query, params=None):
+	def fetchAll(self, query, params = ()):
 		"""
 		Fetch all values from db that matche given query.
 		Calls self.fetch with all = True.
@@ -246,6 +234,4 @@ class db:
 		:param query: query to execute. You can bind parameters with %s
 		:param params: parameters list. First element replaces first %s and so on
 		"""
-		if params is None:
-			params = ()
 		return self.fetch(query, params, True)

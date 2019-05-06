@@ -80,7 +80,6 @@ class tokenList:
 		"""
 		# Make sure the token exists
 		ret = []
-		userID = int(userID)
 		for _, value in self.tokens.items():
 			if value.userID == userID:
 				if ignoreIRC and value.irc:

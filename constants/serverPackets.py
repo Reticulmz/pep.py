@@ -16,12 +16,12 @@ def forceUpdate():
 
 def loginBanned():
 	packets = packetHelper.buildPacket(packetIDs.server_userID, [[-1, dataTypes.SINT32]])
-	packets += notification("You are banned. You can appeal after one month since your ban by sending an email to support@ripple.moe from the email address you've used to sign up.")
+	packets += notification("You are banned. You can appeal after one month since your ban by sending an email to {} from the email address you've used to sign up.".format(glob.conf.extra["support-email"]))
 	return packets
 
 def loginLocked():
 	packets = packetHelper.buildPacket(packetIDs.server_userID, [[-1, dataTypes.SINT32]])
-	packets += notification("Your account is locked. You can't log in, but your profile and scores are still visible from the website. If you want to unlock your account, send an email to support@ripple.moe from the email address you've used to sign up.")
+	packets += notification("Your account is locked. You can't log in, but your profile and scores are still visible from the website. If you want to unlock your account, send an email to {} from the email address you've used to sign up.".format(glob.conf.extra["support-email"]))
 	return packets
 
 def loginError():
@@ -94,7 +94,7 @@ def userPanel(userID, force = False):
 	# Get username color according to rank
 	# Only admins and normal users are currently supported
 	userRank = 0
-	if username == "FokaBot":
+	if username == glob.BOT_NAME:
 		userRank |= userRanks.MOD
 	elif userUtils.isInPrivilegeGroup(userID, "developer"):
 		userRank |= userRanks.ADMIN

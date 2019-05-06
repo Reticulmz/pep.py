@@ -1,5 +1,5 @@
 import time
-from MySQLdb._exceptions import ProgrammingError
+from _mysql import ProgrammingError
 
 from common import generalUtils
 from common.constants import gameModes
@@ -251,12 +251,21 @@ def calculatePP(userID, gameMode):
 	:param gameMode: game mode number
 	:return: total PP
 	"""
-	return sum(round(round(row["pp"]) * 0.95 ** i) for i, row in enumerate(glob.db.fetchAll(
-		"SELECT pp FROM scores LEFT JOIN(beatmaps) USING(beatmap_md5) "
-		"WHERE userid = %s AND play_mode = %s AND completed = 3 AND ranked >= 2 AND disable_pp = 0 AND pp IS NOT NULL "
-		"ORDER BY pp DESC LIMIT 500",
-		(userID, gameMode)
-	)))
+	# Get best pp scores
+	bestPPScores = glob.db.fetchAll(
+		"SELECT pp FROM scores WHERE userid = %s AND play_mode = %s AND completed = 3 ORDER BY pp DESC LIMIT 500",
+		[userID, gameMode])
+
+	# Calculate weighted PP
+	totalPP = 0
+	if bestPPScores is not None:
+		k = 0
+		for i in bestPPScores:
+			new = round(round(i["pp"]) * 0.95 ** k)
+			totalPP += new
+			k += 1
+
+	return totalPP
 
 def updateAccuracy(userID, gameMode):
 	"""
@@ -278,13 +287,14 @@ def updatePP(userID, gameMode):
 	:param userID: user id
 	:param gameMode: game mode number
 	"""
-	glob.db.execute(
-		"UPDATE users_stats SET pp_{}=%s WHERE id = %s LIMIT 1".format(scoreUtils.readableGameMode(gameMode)),
-		(
-			calculatePP(userID, gameMode),
-			userID
-		)
-	)
+	# Make sure the user exists
+	# if not exists(userID):
+	#	return
+
+	# Get new total PP and update db
+	newPP = calculatePP(userID, gameMode)
+	mode = scoreUtils.readableGameMode(gameMode)
+	glob.db.execute("UPDATE users_stats SET pp_{}=%s WHERE id = %s LIMIT 1".format(mode), [newPP, userID])
 
 def updateStats(userID, __score):
 	"""

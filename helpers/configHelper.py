@@ -31,49 +31,48 @@ class config:
 		"""
 		try:
 			# Try to get all the required keys
-			self.config.get("db", "host")
-			self.config.get("db", "username")
-			self.config.get("db", "password")
-			self.config.get("db", "database")
-			self.config.get("db", "workers")
+			self.config.get("db","host")
+			self.config.get("db","username")
+			self.config.get("db","password")
+			self.config.get("db","database")
+			self.config.get("db","workers")
 
-			self.config.get("redis", "host")
-			self.config.get("redis", "port")
-			self.config.get("redis", "database")
-			self.config.get("redis", "password")
+			self.config.get("redis","host")
+			self.config.get("redis","port")
+			self.config.get("redis","database")
+			self.config.get("redis","password")
 
-			self.config.get("server", "port")
-			self.config.get("server", "threads")
-			self.config.get("server", "gzip")
-			self.config.get("server", "gziplevel")
-			self.config.get("server", "cikey")
-			self.config.get("server", "letsapiurl")
+			self.config.get("server","port")
+			self.config.get("server","threads")
+			self.config.get("server","gzip")
+			self.config.get("server","gziplevel")
+			self.config.get("server","cikey")
 
 			self.config.get("cheesegull", "apiurl")
 			self.config.get("cheesegull", "apikey")
 
-			self.config.get("debug", "enable")
-			self.config.get("debug", "packets")
-			self.config.get("debug", "time")
+			self.config.get("debug","enable")
+			self.config.get("debug","packets")
+			self.config.get("debug","time")
 
-			self.config.get("sentry", "enable")
-			self.config.get("sentry", "banchodsn")
-			self.config.get("sentry", "ircdsn")
+			self.config.get("sentry","enable")
+			self.config.get("sentry","banchodsn")
+			self.config.get("sentry","ircdsn")
 
-			self.config.get("discord", "enable")
-			self.config.get("discord", "boturl")
-			self.config.get("discord", "devgroup")
+			self.config.get("discord","enable")
+			self.config.get("discord","boturl")
+			self.config.get("discord","devgroup")
 
 			self.config.get("datadog", "enable")
 			self.config.get("datadog", "apikey")
 			self.config.get("datadog", "appkey")
 
-			self.config.get("irc", "enable")
-			self.config.get("irc", "port")
-			self.config.get("irc", "hostname")
+			self.config.get("irc","enable")
+			self.config.get("irc","port")
+			self.config.get("irc","hostname")
 
-			self.config.get("localize", "enable")
-			self.config.get("localize", "ipapiurl")
+			self.config.get("localize","enable")
+			self.config.get("localize","ipapiurl")
 			return True
 		except configparser.Error:
 			return False
@@ -89,14 +88,14 @@ class config:
 
 		# Set keys to config object
 		self.config.add_section("db")
-		self.config.set("db", "host", "localhost")
+		self.config.set("db", "host", "db")
 		self.config.set("db", "username", "root")
 		self.config.set("db", "password", "")
 		self.config.set("db", "database", "ripple")
 		self.config.set("db", "workers", "4")
 
 		self.config.add_section("redis")
-		self.config.set("redis", "host", "localhost")
+		self.config.set("redis", "host", "redis");
 		self.config.set("redis", "port", "6379")
 		self.config.set("redis", "database", "0")
 		self.config.set("redis", "password", "")
@@ -107,7 +106,6 @@ class config:
 		self.config.set("server", "gzip", "1")
 		self.config.set("server", "gziplevel", "6")
 		self.config.set("server", "cikey", "changeme")
-		self.config.set("server", "letsapiurl", "http://.../letsapi")
 
 		self.config.add_section("cheesegull")
 		self.config.set("cheesegull", "apiurl", "http://cheesegu.ll/api")
